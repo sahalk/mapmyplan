@@ -4,6 +4,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use App\Http\Controllers\HomeController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,6 +21,10 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->name('dashboard');
+Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
+    Route::get('/dashboard', [HomeController::class, 'home'])->name('dashboard');
+});
+
+// Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+//     return Inertia::render('Dashboard');
+// })->name('dashboard');
