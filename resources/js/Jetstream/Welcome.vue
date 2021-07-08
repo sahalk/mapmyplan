@@ -81,16 +81,33 @@
                 <p>Sorry, no results found.</p>
             </div>
         </div>
+        <div class="p-6 sm:px-40 bg-gray-200 bg-opacity-25">
+            <div>
+                <button v-if="current_count < total_count" type="submit" class="inline-flex items-center justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" @click="filter(1)">
+                    Load More
+                </button>
+                <span v-else class="-mt-7 pr-3 text-gray-500 italic">
+                    End of results
+                </span>
+            </div>
+            <span class="float-right -mt-7 pr-3 text-gray-500 italic">
+                Displaying {{current_count}} of {{total_count}} Accomdations
+            </span>
+        </div>
     </div>
 </template>
 
 <script>
     import JetApplicationLogo from '@/Jetstream/ApplicationLogo'
+    import JetLabel from '@/Jetstream/Label'
+    import JetButton from './Button'
     import VueElementLoading from "vue-element-loading"
 
     export default {
         components: {
             JetApplicationLogo,
+            JetLabel,
+            JetButton,
             VueElementLoading,
         },
         props: ['areas', 'suburbs', 'accoms', 'count'],
@@ -102,8 +119,46 @@
                 total_count: this.count,
                 current_area: 'All Areas',
                 current_suburb: 'All Suburbs',
+                products: this.accoms,
+                show_modal: false,
+                modal_title: '',
                 modal_desc: '',
             }
         },
+        methods: {
+            filter(loadMore = 0){
+                this.loading = true;
+                if(loadMore) {
+                    this.page++;
+                } else {
+                    this.page = 1;
+                }
+                axios.get(this.route('filter',{ area: this.current_area, suburb: this.current_suburb, page_number: this.page }))
+                .then(res => {
+                    if(res.data.status) {
+                        if(loadMore) {
+                            this.products = this.products.concat(res.data.accoms.products);
+                            this.current_count = this.current_count + res.data.accoms.products.length
+                        } else {
+                            this.products = res.data.accoms.products;
+                            this.total_count = res.data.accoms.numberOfResults;
+                            this.current_count = (this.total_count < 10) ? this.total_count : 10;
+                            if(this.total_count === 0) {
+                                this.$toast.error(`No Accomdations Found.`, { position: "top-right" });
+                                this.loading = false;
+                                return;
+                            }
+                        }
+                        this.$toast.success(`Accomdations Fetched`, { position: "top-right" });
+                    } else {
+                        this.$toast.error(`Something went wrong.`, { position: "top-right" });
+                    }
+                this.loading = false;
+                });
+            },
+            closeModal() {
+                this.show_modal = false
+            },
+        }
     }
 </script>
