@@ -17,15 +17,16 @@ use App\Http\Controllers\HomeController;
 |
 */
 
+// Redirect index page to login.
 Route::get('/', function () {
     return redirect('/login');
 });
 
+// Middleware for authentication.
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
+    // Route for the dashboard.
     Route::get('/dashboard', [HomeController::class, 'home'])->name('dashboard');
+
+    // Route to return accomdations based on filters.
     Route::get('/filter', [HomeController::class, 'filter'])->name('filter');
 });
-
-// Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-//     return Inertia::render('Dashboard');
-// })->name('dashboard');
