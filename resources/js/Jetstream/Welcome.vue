@@ -94,6 +94,22 @@
                 Displaying {{current_count}} of {{total_count}} Accomdations
             </span>
         </div>
+        <jet-dialog-modal :show="show_modal" @close="closeModal">
+            <template #title>
+                {{modal_title}}
+            </template>
+
+            <template #content>
+                {{modal_desc}}
+
+            </template>
+
+            <template #footer>
+                <jet-button @click="closeModal">
+                    Close
+                </jet-button>
+            </template>
+        </jet-dialog-modal>
     </div>
 </template>
 
@@ -101,6 +117,7 @@
     import JetApplicationLogo from '@/Jetstream/ApplicationLogo'
     import JetLabel from '@/Jetstream/Label'
     import JetButton from './Button'
+    import JetDialogModal from './DialogModal'
     import VueElementLoading from "vue-element-loading"
 
     export default {
@@ -108,6 +125,7 @@
             JetApplicationLogo,
             JetLabel,
             JetButton,
+            JetDialogModal,
             VueElementLoading,
         },
         props: ['areas', 'suburbs', 'accoms', 'count'],
