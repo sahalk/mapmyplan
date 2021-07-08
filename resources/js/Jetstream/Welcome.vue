@@ -1,6 +1,7 @@
 <template>
     <div>
         <div class="p-6 sm:px-20 bg-white border-b border-gray-200">
+            <!-- Application Logo -->
             <div>
                 <jet-application-logo class="block h-12 w-auto" />
             </div>
@@ -17,6 +18,7 @@
             </div>
         </div>
 
+        <!-- Filter Options -->
         <div class="p-6 sm:px-20 bg-gray-200 bg-opacity-25">
             <div class="p-6">
                 <div class="flex items-center">
@@ -47,6 +49,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- Load More Accomodations -->
         <div v-if="products.length">
             <vue-element-loading :active="loading" color="rgb(77 70 228)" spinner="spinner" />
             <div v-for="accom in products" :key="accom.productId" class="p-6 sm:px-40 bg-white border-b border-gray-200">
@@ -94,6 +98,8 @@
                 Displaying {{current_count}} of {{total_count}} Accomdations
             </span>
         </div>
+
+        <!-- Modal View -->
         <jet-dialog-modal :show="show_modal" @close="closeModal">
             <template #title>
                 {{modal_title}}
@@ -129,6 +135,8 @@
             VueElementLoading,
         },
         props: ['areas', 'suburbs', 'accoms', 'count'],
+
+        // All the data required for the page
         data() {
             return {
                 loading: false,
@@ -143,20 +151,30 @@
                 modal_desc: '',
             }
         },
+
+        // All the methods used
         methods: {
+            // Function to filter the results based on users parameters
             filter(loadMore = 0){
+                // Toggle Loading Spinner
                 this.loading = true;
+
+                // Change Page Number
                 if(loadMore) {
                     this.page++;
                 } else {
                     this.page = 1;
                 }
+
+                // GET request (using axios) to fetch the accomodation options
                 axios.get(this.route('filter',{ area: this.current_area, suburb: this.current_suburb, page_number: this.page }))
                 .then(res => {
                     if(res.data.status) {
+                        // If user clicks on load more.
                         if(loadMore) {
                             this.products = this.products.concat(res.data.accoms.products);
                             this.current_count = this.current_count + res.data.accoms.products.length
+                        // If user uses the filter
                         } else {
                             this.products = res.data.accoms.products;
                             this.total_count = res.data.accoms.numberOfResults;
@@ -171,9 +189,11 @@
                     } else {
                         this.$toast.error(`Something went wrong.`, { position: "top-right" });
                     }
+                // Toggle Loading Spinner
                 this.loading = false;
                 });
             },
+            // Fucntion to close the modal window
             closeModal() {
                 this.show_modal = false
             },
