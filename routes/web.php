@@ -23,6 +23,7 @@ Route::get('/', function () {
 
 Route::group(['middleware' => ['auth:sanctum', 'verified']], function() {
     Route::get('/dashboard', [HomeController::class, 'home'])->name('dashboard');
+    Route::get('/filter', [HomeController::class, 'filter'])->name('filter');
 });
 
 // Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
